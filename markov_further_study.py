@@ -1,3 +1,7 @@
+"""Maybe start on a new function for n-length keywords, instead of trying to edit thse"""
+"""use existing dictionary and keep adding from the values of the keys until our k has n words in it"""
+
+
 """Generate Markov text from text files."""
 from random import choice
 import sys
@@ -65,6 +69,11 @@ def make_chains(text_string):
             else: 
                 chains[(string_list[i], string_list[i+1])] = [string_list[i+2]]
 
+
+    for keys in chains:
+        chains[keys] = list(set(chains[keys]))
+    
+    print(chains)
     return chains
 
 
