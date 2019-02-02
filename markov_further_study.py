@@ -30,7 +30,7 @@ def open_and_read_file(file_path):
     #return join_string
 
 
-def make_chains(text_string):
+def make_chains(text_string,n=2):
     """Take input text as string; return dictionary of Markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -60,20 +60,21 @@ def make_chains(text_string):
     # your code goes here
 
     string_list = text_string.split()
-    for i in range(0, len(string_list)-1):
-        if i == len(string_list)-2:
-            chains[(string_list[i], string_list[i+1])] = []
-        else:
-            if (string_list[i], string_list[i+1]) in chains:
-                chains[(string_list[i], string_list[i+1])].append(string_list[i+2])
-            else: 
-                chains[(string_list[i], string_list[i+1])] = [string_list[i+2]]
 
-
-    for keys in chains:
-        chains[keys] = list(set(chains[keys]))
+    for i in range(0, len(string_list)- n +1):
     
-    print(chains)
+        if i == len(string_list)-n:
+            chains[tuple(string_list[i:len(string_list)])] = []
+        else:
+            if tuple(string_list[i:n + i]) in chains:
+                chains[tuple(string_list[i:n + i])].append(string_list[i+n])
+            else: 
+                chains[tuple(string_list[i:n + i])] = [string_list[i+n]]
+
+
+    # for keys in chains:
+    #     chains[keys] = list(set(chains[keys]))
+    
     return chains
 
 
@@ -81,28 +82,34 @@ def make_text(chains):
     """Return text from chains."""
 
 
-
-    starting_word = choice(list(chains))
+    random_string = ''
+    starting_word = tuple(choice([key for key in list(chains) if key[0][0].isupper()]))
+    #starting_word = choice(list(chains))
     key_word = starting_word
-    random_string = '{} {}'.format(starting_word[0], starting_word[1])
+    for word in starting_word:
+        random_string += word + ' '
+
+        #'{} {}'.format(starting_word[0], starting_word[1])
 
     while chains[key_word] != []:
         next_word = choice(chains[key_word])
-        key_word = (key_word[1], next_word)
-        random_string = '{} {}'.format(random_string, next_word)
+        key_word = (key_word[1:]) + tuple([next_word])
+        random_string += next_word + ' '
     #words = []
     # your code goes here
+
     return random_string
     #return " ".join(words)
 
 
 input_path = sys.argv[1]
+input_n = int(sys.argv[2])
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+chains = make_chains(input_text, input_n)
 
 # Produce random text
 random_text = make_text(chains)
