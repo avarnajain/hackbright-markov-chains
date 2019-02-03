@@ -1,6 +1,4 @@
-"""Maybe start on a new function for n-length keywords, instead of trying to edit thse"""
-"""use existing dictionary and keep adding from the values of the keys until our k has n words in it"""
-
+"""Work on creating the dictionary comprehension"""
 
 """Generate Markov text from text files."""
 from random import choice
@@ -58,43 +56,60 @@ def make_chains(text_string,n=2):
     chains = {}
 
     # your code goes here
-
-    string_list = text_string.split()
+    string_list = text_string.split() + ['my_very_special_last_word']
 
     for i in range(0, len(string_list)- n +1):
-    
+        #     
         if i == len(string_list)-n:
-            chains[tuple(string_list[i:len(string_list)])] = []
+            if tuple(string_list[i:n + i]) in chains:
+                chains[tuple(string_list[i:len(string_list)])].append('')
+            else: 
+                chains[tuple(string_list[i:len(string_list)])] = ['']
+
         else:
             if tuple(string_list[i:n + i]) in chains:
-                chains[tuple(string_list[i:n + i])].append(string_list[i+n])
+                chains[tuple(string_list[i:i+n])].append(string_list[i+n])
             else: 
-                chains[tuple(string_list[i:n + i])] = [string_list[i+n]]
+                chains[tuple(string_list[i:i+n])] = [string_list[i+n]]
 
 
     # for keys in chains:
     #     chains[keys] = list(set(chains[keys]))
-    
-    return chains
+    #print('dictionary', chains)
+            
+    # dictionary containing key:value for every key where the key is a tuple(ngram) and value 
+    # is a list of next words  
+def make_chain2(text_string,n=2): 
+
+    # your code goes here
+    string_list = text_string.split() + ['my_very_special_last_word']
+    print ({
+        tuple(string_list[i:i+n]):list(string_list[i+n]) 
+        for i in range(0, len(string_list-n))})
+
+    return None
+
+
 
 
 def make_text(chains):
     """Return text from chains."""
 
-
     random_string = ''
-    starting_word = tuple(choice([key for key in list(chains) if key[0][0].isupper()]))
+    starting_word = choice([key for key in chains if key[0][0].isupper()])
     #starting_word = choice(list(chains))
     key_word = starting_word
     for word in starting_word:
         random_string += word + ' '
-
         #'{} {}'.format(starting_word[0], starting_word[1])
 
-    while chains[key_word] != []:
+    while True:
         next_word = choice(chains[key_word])
-        key_word = (key_word[1:]) + tuple([next_word])
+        key_word = (key_word[1:]) + (next_word,)
         random_string += next_word + ' '
+        if next_word == 'my_very_special_last_word':
+            break
+
     #words = []
     # your code goes here
 
@@ -109,9 +124,9 @@ input_n = int(sys.argv[2])
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text, input_n)
-
+#chains = make_chains(input_text, input_n)
+chains2 = make_chain2(input_text, input_n)
 # Produce random text
-random_text = make_text(chains)
+random_text = make_text(chains2)
 
 print(random_text)
